@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "ingreso-egreso-app-95850": {
+      "hosting": {
+        "ReduxIngresoEgresoApp": [
+          "ingreso-egreso-app-95850"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "ingreso-egreso-app-95850"
+  }
+}
