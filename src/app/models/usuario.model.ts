@@ -1,11 +1,22 @@
 
-export interface User {
-  uid: string;
-  email: string;
-  displayName: string;
-  photoURL: string;
-  emailVerified: boolean;
-  prueba?: string;
+export class User {
+
+  static fromFirebase( { email, uid, displayName }:any ) {
+
+    return new User(uid, email, displayName)
+  }
+
+  constructor(
+    public uid?: string,
+    public email?: string | null,
+    public displayName?: string | null,
+    public photoURL?: string,
+    public emailVerified?: boolean,
+    public prueba?: string,
+  ) {
+
+  }
+
 }
 
 /* export class Usuario {

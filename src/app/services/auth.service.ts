@@ -8,6 +8,10 @@ import {
 } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { User } from '../models/usuario.model';
+import { AppState } from '../app.reducer';
+import { Store } from '@ngrx/store';
+import * as authActions from './auth.actions';
+import { Subscription } from 'rxjs';
 
 
 @Injectable({
@@ -15,23 +19,38 @@ import { User } from '../models/usuario.model';
 })
 export class AuthService {
   userData: any; // Save logged in user data
+  userSubscription!: Subscription;
+
   constructor(
     public afs: AngularFirestore, // Inject Firestore service
     public afAuth: AngularFireAuth, // Inject Firebase auth service
     public router: Router,
-    public ngZone: NgZone // NgZone service to remove outside scope warning
+    public ngZone: NgZone, // NgZone service to remove outside scope warning
+    private store: Store<AppState>
   ) {
     /* Saving user data in localstorage when
     logged in and setting up null when logged out */
-    this.afAuth.authState.subscribe((user) => {
+     this.afAuth.authState.subscribe((user) => {
       if (user) {
         this.userData = user;
+
+        const fuser = User.fromFirebase( user )
+
+        this.store.dispatch( authActions.setUser( { user: fuser }  ) )
 
         localStorage.setItem('user', JSON.stringify(this.userData));
         JSON.parse(localStorage.getItem('user')!);
       } else {
+
+
+        this.store.dispatch( authActions.unSetUser() );
+
+
+        console.log('Llamar unset del user');
+
         localStorage.setItem('user', 'null');
         JSON.parse(localStorage.getItem('user')!);
+
       }
     });
   }
@@ -41,7 +60,7 @@ export class AuthService {
       .signInWithEmailAndPassword(email, password)
       .then((result) => {
         this.ngZone.run(() => {
-          this.router.navigate(['dashboard']);
+         this.router.navigate(['/dashboard']);
         });
         this.SetUserData(result.user);
       })
